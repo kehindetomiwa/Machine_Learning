@@ -1,0 +1,356 @@
+#define reader_cxx
+#include "src/reader.h"
+#include <TH2.h>
+#include <TStyle.h>
+#include <TCanvas.h>
+#include <TMath.h>
+#include <TLorentzVector.h>
+#include <iostream>
+#include <TProfile.h>
+#include <fstream>
+using namespace std;
+double lumi=36.5;
+std::map<TString, TH1F*> pics;
+TString output;
+bool dojvt=false;
+int main (int argc, char** argv)
+{
+    TFile *file=new TFile(argv[1]);
+    TChain *chain=new TChain("ntuple");
+    chain->Add(argv[1]);
+    output="plot"+TString(argv[1]);
+    dojvt=atoi(argv[2]);
+    reader a(chain);
+    a.Loop();
+
+    return 0;
+}
+void reader::Loop()
+{
+    TFile *outfile=new TFile(output, "recreate");
+    ofstream fout("/afs/cern.ch/user/r/ruanxf/work/public/Madala/Outputs/Stats/Merge_HighMassSet_Cat1/MassPoints/masspoint_Mad2s_Merge_HighMassSet_Cat1.txt");
+
+    TTree * tree=new TTree("tree","tree");
+    double m_ldvtxsumpt2, m_subvtxsumpt2, m_orgldvtxsumpt2, m_npvx,  m_weight, m_part, m_met, m_metsig, m_sumet, m_sample, m_dz, m_dsumpt2, m_m_yy, m_N_j_central, m_hardvtxsumpt2,m_N_j_btag,m_N_leps,m_phpt1,m_phpt2,m_pheta1,m_pheta2, m_met2, m_mjj, m_myyjj, m_jetpt1, m_jetpt2,m_jeteta1,m_jeteta2,m_N_j,m_ptyy,m_pthard,m_etayy,m_dphiyymet;
+
+    tree->Branch("ldvtxsumpt2", &m_ldvtxsumpt2);
+    tree->Branch("subvtxsumpt2", &m_subvtxsumpt2);
+    tree->Branch("dsumpt2", &m_dsumpt2);
+    tree->Branch("hardvtxsumpt2", &m_hardvtxsumpt2);
+
+    tree->Branch("orgldvtxsumpt2", &m_orgldvtxsumpt2);
+    tree->Branch("npvx", &m_npvx);
+    tree->Branch("weight", &m_weight);
+    tree->Branch("part", &m_part);
+    tree->Branch("metsig", &m_metsig);
+    tree->Branch("met", &m_met);
+    tree->Branch("met2", &m_met2);
+    tree->Branch("myyjj", &m_myyjj);
+    tree->Branch("mjj", &m_mjj);
+
+    tree->Branch("sumet", &m_sumet);
+    tree->Branch("sample", &m_sample);
+    tree->Branch("dz", &m_dz);
+    tree->Branch("m_yy", &m_m_yy);
+    tree->Branch("N_j_central", &m_N_j_central);
+    tree->Branch("N_j_btag", &m_N_j_btag);
+    tree->Branch("N_leps", &m_N_leps);
+    tree->Branch("phpt1", &m_phpt1);
+    tree->Branch("phpt2", &m_phpt2);
+    tree->Branch("pheta1", &m_pheta1);
+    tree->Branch("pheta2", &m_pheta2);
+    tree->Branch("jetpt1", &m_jetpt1);
+    tree->Branch("jetpt2", &m_jetpt2);
+    tree->Branch("jeteta1", &m_jeteta1);
+    tree->Branch("jeteta2", &m_jeteta2);
+    tree->Branch("ptyy", &m_ptyy);
+    tree->Branch("etayy", &m_etayy);
+    tree->Branch("N_j", &m_N_j);
+    tree->Branch("dphiyymet", &m_dphiyymet);
+    tree->Branch("pthard", &m_pthard);
+
+
+
+    TH1F *picyyjj=new TH1F("picyyjj", "picjj", 100,0,1000);
+    TH1F *picyyjjjj=new TH1F("picyyjjjj", "picjjjj", 100,0,1000);
+    TH1F *picyy=new TH1F("picyy","picyy", 57, 105, 180);
+    TH1F *picyy2=new TH1F("picyy2","picyy2", 44, 180, 400);
+    TH1F *picnjet=new TH1F("picnjet","picnjet", 20, 0, 20);
+    TH1F *picncjet=new TH1F("picncjet","piccnjet", 20, 0, 20);
+    TH1F *picnfjet=new TH1F("picnfjet","picfnjet", 20, 0, 20);
+    TH1F *picptj=new TH1F("picptj","p_{T,jet} [GeV]", 40, 0, 200);
+    TH1F *piccptj=new TH1F("piccptj","p_{T,central jet} [GeV]", 40, 0, 200);
+    TH1F *picfptj=new TH1F("picfptj","p_{T,forward jet} [GeV]", 40, 0, 200);
+
+    TH1F *svpicnjet=new TH1F("svpicnjet","svpicnjet", 20, 0, 20);
+    TH1F *svpicncjet=new TH1F("svpicncjet","svpiccnjet", 20, 0, 20);
+    TH1F *svpicnfjet=new TH1F("svpicnfjet","svpicfnjet", 20, 0, 20);
+    TH1F *svpicptj=new TH1F("svpicptj","p_{T,jet} [GeV]", 40, 0, 200);
+    TH1F *svpiccptj=new TH1F("svpiccptj","p_{T,central jet} [GeV]", 40, 0, 200);
+    TH1F *svpicfptj=new TH1F("svpicfptj","p_{T,forward jet} [GeV]", 40, 0, 200);
+
+    TH1F *dvpicnjet=new TH1F("dvpicnjet","dvpicnjet", 20, 0, 20);
+    TH1F *dvpicncjet=new TH1F("dvpicncjet","dvpiccnjet", 20, 0, 20);
+    TH1F *dvpicnfjet=new TH1F("dvpicnfjet","dvpicfnjet", 20, 0, 20);
+    TH1F *dvpicptj=new TH1F("dvpicptj","p_{T,jet} [GeV]", 40, 0, 200);
+    TH1F *dvpiccptj=new TH1F("dvpiccptj","p_{T,central jet} [GeV]", 40, 0, 200);
+    TH1F *dvpicfptj=new TH1F("dvpicfptj",";p_{T,forward jet} [GeV]", 40, 0, 200);
+
+    TH1F *noldsumpt2=new TH1F("noldsumpt2","Sum p_{T}^{2} [GeV^{2}], physics vertex",100,0,5000);
+    TH1F *nopusumpt2=new TH1F("nopusumpt2","Sum p_{T}^{2} [GeV^{2}], Pile up vertex",50,0,1000);
+    TH1F *nodsumpt2=new TH1F("nodsumpt2","Sum p_{T}^{2} [GeV^{2}], physics-pile up vertex",70,-2000,5000);
+
+    TH1F *loldsumpt2=new TH1F("loldsumpt2","Sum p_{T}^{2} [GeV^{2}], physics vertex",100,0,5000);
+    TH1F *hildsumpt2=new TH1F("hildsumpt2","Sum p_{T}^{2} [GeV^{2}], physics vertex",100,0,5000);
+    TH1F *lopusumpt2=new TH1F("lopusumpt2","Sum p_{T}^{2} [GeV^{2}], Pile up vertex",50,0,1000);
+    TH1F *hipusumpt2=new TH1F("hipusumpt2","Sum p_{T}^{2} [GeV^{2}], Pile up vertex",50,0,1000);
+    TH1F *lodsumpt2=new TH1F("lodsumpt2","Sum p_{T}^{2} [GeV^{2}], physics-pile up vertex",70,-2000,5000);
+    TH1F *hidsumpt2=new TH1F("hidsumpt2","Sum p_{T}^{2} [GeV^{2}], physics-pile up vertex",70,-2000,5000);
+//inc nj ncj nfj
+//inc ptfj ptcj ptj
+//sv
+//dv
+    double evtsv=0;
+    double evtdv=0;
+    double orgevtsv=0;
+    double orgevtdv=0;
+    if (fChain == 0) return;
+    Long64_t nentries = fChain->GetEntries();
+
+    Long64_t nbytes = 0, nb = 0;
+    for (Long64_t jentry=0; jentry<nentries; jentry++)
+    {
+        Long64_t ientry = LoadTree(jentry);
+        if (ientry < 0) break;
+        nb = fChain->GetEntry(jentry);
+        nbytes += nb;
+//if(!((*photons_pT)[0]>40&&(*photons_pT)[1]>30))continue;
+//if(!(m_yy>200&&m_yy<400))continue;
+//if(met_sig<3.5)continue;
+        if(output.Contains("zh")&&met_truth_TST<10)continue;
+//if(fabs(Vertex_Z_php-Vertex_Z_hard)<0.1){cout<<" SAME1 "<<endl;
+//cout<<" truth same1 " <<fabs(Vertex_Z_hard-Vertex_Z_truth)<<endl;
+//
+//}
+//if(fabs(Vertex_Z_php-Vertex_Z_hard)>0.1&&fabs(Vertex_Z_php-Vertex_Z_PU)<0.1){cout<<" DIFF1 "<<endl;
+//
+//
+//cout<<" truth diff1 " <<fabs(Vertex_Z_hard-Vertex_Z_truth)<<endl;
+//}
+//if(fabs(Vertex_Z_php-Vertex_Z_hard)>0.1&&fabs(Vertex_Z_php-Vertex_Z_PU)>0.1){cout<<" DIFF2 "<<endl;
+//cout<<" truth diff21 " <<fabs(Vertex_Z_hard-Vertex_Z_truth)<<endl;
+//
+//}
+
+
+
+//if(fabs(Vertex_SumPt2_PU-Vertex_SumPt2_php)<0.1){cout<<" same "<<N_pv<<" "<<fabs(Vertex_Z_php-Vertex_Z_PU)<<" "<<m_yy<<" zhard "<<Vertex_Z_hard<<" sumpt2hard "<<Vertex_SumPt2_hard<<" zphp "<<Vertex_Z_php<<" sumpt2php "<<Vertex_SumPt2_php<<endl;
+//if(fabs(Vertex_Z_php-Vertex_Z_hard)<0.1)cout<<" same samevtx "<<endl;
+//} else {cout<<" diff "<<N_pv<<" "<<fabs(Vertex_Z_php-Vertex_Z_PU)<<" "<<m_yy<<endl;
+//if(fabs(Vertex_Z_php-Vertex_Z_hard)<0.1)cout<<" diffsv "<<endl;
+//}
+
+
+//same vertex
+        m_npvx=N_pv;
+        m_ldvtxsumpt2=Vertex_SumPt2_php;
+
+        m_subvtxsumpt2=Vertex_SumPt2_PU;
+        m_dz=fabs(Vertex_Z_php-Vertex_Z_PU);
+//diff vertex
+        if(fabs(Vertex_SumPt2_hard-Vertex_SumPt2_php)>0.1)
+        {
+            m_subvtxsumpt2=Vertex_SumPt2_hard;
+            m_dz=fabs(Vertex_Z_php-Vertex_Z_hard);
+        }
+        m_hardvtxsumpt2=Vertex_SumPt2_hard;
+//cout<<Vertex_SumPt2_php<<" "<<Vertex_SumPt2_PU<<endl;
+        m_weight=weight_yy_combPRW*lumi*lumiXsecWeight;
+        if(sample==0)m_weight=1;
+        m_part=jentry%2;
+        m_met=met_TST;
+        m_metsig=met_sig;
+        m_sumet=sumet_TST;
+        m_dsumpt2=m_subvtxsumpt2-m_ldvtxsumpt2;
+        if(sample==342249)m_sample=1;
+        if(sample==0)m_sample=2;
+        m_m_yy=m_yy;
+        m_N_j_central=N_j_central;
+        m_N_j_btag=N_j_btag;
+        m_N_leps=N_leps;
+        m_phpt1=(*photons_pT)[0];
+        m_phpt2=(*photons_pT)[1];
+        m_pheta1=(*photons_eta)[0];
+        m_pheta2=(*photons_eta)[1];
+
+
+
+
+        TLorentzVector metv;
+        metv.SetPtEtaPhiM(met_TST, 0, phi_TST,0);
+//cout<<"new evt "<<endl;
+
+        TLorentzVector ph1,ph2,myyjj,myyjjjj,myy,mjj;
+        ph1.SetPtEtaPhiM((*photons_pT)[0],(*photons_eta)[0],(*photons_phi)[0],0);
+        ph2.SetPtEtaPhiM((*photons_pT)[1],(*photons_eta)[1],(*photons_phi)[1],0);
+        myyjj=ph1+ph2;
+        myyjjjj=ph1+ph2;
+        myy=ph1+ph2;
+        int added1=0;
+        int added2=0;
+//cout<< "new evet "<<endl;
+
+        int ncj=0;
+        int nfj=0;
+        int nj=0;
+        bool rmevt=0;
+        for(int i=0; i<jets_pT->size(); i++)
+        {
+            TLorentzVector jettmp;
+            jettmp.SetPtEtaPhiM(jets_pT->at(i),jets_eta->at(i), jets_phi->at(i),jets_m->at(i));
+            if(dojvt)
+            {
+                if(fabs(jets_eta->at(i))<2.4&&jets_pT->at(i)>60&&fabs(jets_jvt->at(i))<0.59)
+                {
+                    rmevt=1;
+                    continue;
+//
+//cout<<" met before "<<i<<" value "<<metv.Pt()<<endl;
+//metv+=jettmp;sumet_TST-=jettmp.Pt();
+//cout<<" met after "<<i<<" value "<<metv.Pt()<<endl;
+//
+//	cout<<jets_pT->at(i)<<" "<<jets_jvt->at(i)<<endl;
+                }
+            }
+//
+            if(fabs(jets_eta->at(i))<2.4)
+            {
+                ncj++;
+//if(fabs(jettmp.DeltaPhi(metv))<0.4)rmevt=1;
+            }
+            else nfj++;
+            nj++;
+            if(fabs(jets_eta->at(i))<2.4&&added1<2)
+            {
+                myyjj+=jettmp;
+                added1++;
+                mjj+=jettmp;
+//cout<<added1<<endl;
+            }
+            if(fabs(jets_eta->at(i))<2.4&&added2<2)
+            {
+                myyjjjj+=jettmp;
+                added2++;
+            }
+
+            if(met_sig>4)
+            {
+                if(rmevt!=1&&m_dsumpt2<0)evtsv+=m_weight;
+                if(rmevt!=1&&m_dsumpt2>0)evtdv+=m_weight;
+                if(m_dsumpt2<0)orgevtsv+=m_weight;
+                if(m_dsumpt2>0)orgevtdv+=m_weight;
+                picptj->Fill(jets_pT->at(i),m_weight);
+                if(fabs(jets_eta->at(i))<2.4)piccptj->Fill(jets_pT->at(i),m_weight);
+                if(fabs(jets_eta->at(i))>2.4)picfptj->Fill(jets_pT->at(i),m_weight);
+                if(m_dsumpt2<0)svpicptj->Fill(jets_pT->at(i),m_weight);
+                if(m_dsumpt2<0&&fabs(jets_eta->at(i))<2.4)svpiccptj->Fill(jets_pT->at(i),m_weight);
+                if(m_dsumpt2<0&&fabs(jets_eta->at(i))>2.4)svpicfptj->Fill(jets_pT->at(i),m_weight);
+
+                if(m_dsumpt2>0)dvpicptj->Fill(jets_pT->at(i),m_weight);
+                if(m_dsumpt2>0&&fabs(jets_eta->at(i))<2.4)dvpiccptj->Fill(jets_pT->at(i),m_weight);
+                if(m_dsumpt2>0&&fabs(jets_eta->at(i))>2.4)dvpicfptj->Fill(jets_pT->at(i),m_weight);
+
+            }
+
+
+        }
+//if(rmevt==1)continue;
+        double fill1=m_ldvtxsumpt2;
+        if(fill1>4999)fill1=4999;
+        double fill2=m_subvtxsumpt2;
+        if(fill2>999)fill2=999;
+        double fill3=m_ldvtxsumpt2-m_subvtxsumpt2;
+        if(fill3>4999)fill3=4999;
+        if(rmevt)continue;
+        noldsumpt2->Fill(fill1, m_weight);
+        nodsumpt2->Fill(fill3, m_weight);
+        nopusumpt2->Fill(fill2, m_weight);
+//if(met_TST>70){
+        if(met_sig>4)
+        {
+            loldsumpt2->Fill(fill1, m_weight);
+            lodsumpt2->Fill(fill3, m_weight);
+            lopusumpt2->Fill(fill2, m_weight);
+//if(met_TST>110){
+            if(met_sig>5.5)
+            {
+                hidsumpt2->Fill(fill3, m_weight);
+                hildsumpt2->Fill(fill1, m_weight);
+                hipusumpt2->Fill(fill2, m_weight);
+            }
+            picnjet->Fill(nj,m_weight);
+            picncjet->Fill(ncj,m_weight);
+            picnfjet->Fill(nfj,m_weight);
+            if(m_dsumpt2<0)svpicnjet->Fill(nj,m_weight);
+            if(m_dsumpt2<0)svpicncjet->Fill(ncj,m_weight);
+            if(m_dsumpt2<0)svpicnfjet->Fill(nfj,m_weight);
+            if(m_dsumpt2>0)dvpicnjet->Fill(nj,m_weight);
+            if(m_dsumpt2>0)dvpicncjet->Fill(ncj,m_weight);
+            if(m_dsumpt2>0)dvpicnfjet->Fill(nfj,m_weight);
+        }
+
+
+        double dphijjmet=fabs(myy.DeltaPhi(metv));
+//m_met2=metv.Pt();
+//m_metsig=metv.Pt()/sqrt(sumet_TST);
+//m_sumet=sumet_TST;
+//if(N_j_central>=4)cout<<"debug 1 "<<myyjjjj.M()<<endl;
+//if(pT_yy>70&&N_j_central>=2&&met_sig>6&&m_dsumpt2<0){picyy->Fill(m_yy);picyy2->Fill(m_yy);
+        if(pT_yy>0&&dphijjmet>2.0&&N_j_central>=2&&added1==2&&myyjj.M()>0&&myyjj.M()>0&&met_sig<99&&met_sig>3.7&&m_dsumpt2<0)
+        {
+            picyy->Fill(m_yy);
+            picyy2->Fill(m_yy);
+            if(m_yy>180&&m_yy<400)fout<<m_yy<<" 1"<<endl;
+
+        }
+        if(m_yy<255&&m_yy>245&&met_sig>0&&N_j_central>=2&&N_j_btag>=0&&m_dsumpt2<99990)
+        {
+
+            if(added1>=2&&myyjjjj.M()<999352&&myyjjjj.M()>0)picyyjj->Fill(myyjj.M());
+            if(added2>=2&&myyjj.M()>0&&myyjj.M()<99150)
+            {
+                picyyjjjj->Fill(myyjjjj.M());
+//if(added1>=2&&myyjjjj.M()<3559999&&myyjjjj.M()>0)cout<<"debug 2 "<<myyjj.M()<<" "<<myyjjjj.M()<<" "<<m_yy<<endl;
+//if(myyjjjj.M()>375&&myyjjjj.M()<1000)fout<<myyjjjj.M()<<" 1"<<endl;
+            }
+        }
+
+        if(jets_pT->size()>=1)m_jetpt1=jets_pT->at(0);
+        else m_jetpt1=0;
+        if(jets_pT->size()>=2)m_jetpt2=jets_pT->at(1);
+        else m_jetpt2=0;
+        if(jets_pT->size()>=1)m_jeteta1=jets_eta->at(0);
+        else m_jeteta1=0;
+        if(jets_pT->size()>=2)m_jeteta2=jets_eta->at(1);
+        else m_jeteta2=0;
+        m_ptyy=pT_yy;
+        m_etayy=(ph1+ph2).Eta();
+        m_N_j=N_j;
+        m_dphiyymet=fabs((ph1+ph2).DeltaPhi(metv));
+        m_pthard=pT_hard;
+
+
+
+        m_myyjj=myyjj.M();
+        m_mjj=mjj.M();
+        tree->Fill();
+    }
+    cout<<" orgevtsv "<<orgevtsv<<endl;
+    cout<<" orgevtdv "<<orgevtdv<<endl;
+    cout<<" evtsv "<<evtsv<<endl;
+    cout<<" evtdv "<<evtdv<<endl;
+
+    fout.close();
+    outfile->Write();
+    outfile->Close();
+}
