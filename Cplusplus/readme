@@ -1,4 +1,4 @@
 #ReadMe
 BDT tool (Boosted decision tree too)
-This tool rely on cern TMVA toolkit
+This tool works with TMVA toolkit
 https://root.cern.ch/tmva
