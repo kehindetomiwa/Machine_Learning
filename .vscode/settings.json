@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "plotEvaluation.C": "cpp",
-        "RunInterface.C": "cpp",
-        "scan.C": "cpp",
-        "scan2.C": "cpp",
-        "readernew.C": "cpp"
-    }
-}
