@@ -57,7 +57,13 @@ class EstimatorSelectionHelper:
             for p,s_test,s_train in zip(params,all_test_scores,all_train_scores):
                 rows.append((row(k,s_test,s_train,p)))
             df = pd.concat(rows,axis=1).T
-            columns = ['estimator','min_test_score','max_test_score','std_test_score','min_train_score','max_train_score','std_train_score']
+            columns = ['estimator',
+                        'min_test_score',
+                        'max_test_score',
+                        'std_test_score',
+                        'min_train_score',
+                        'max_train_score',
+                        'std_train_score']
             columns = columns + [c for c in df.columns if c not in columns]
             print(df)
         return df

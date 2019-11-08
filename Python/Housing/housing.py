@@ -88,7 +88,14 @@ class Categorical_Imputer(TransformerMixin):
             #X.info()
         return X
 
- 
+# Inspired from stackoverflow.com/questions/25239958
+class MostFrequentImputer(BaseEstimator, TransformerMixin):
+    def fit(self, X, y=None):
+        self.most_frequent_ = pd.Series([X[c].value_counts().index[0] for c in X],
+                                        index=X.columns)
+        return self
+    def transform(self, X, y=None):
+        return X.fillna(self.most_frequent_) 
  
  
 def model_fit(train_features, train_actuals):
@@ -217,6 +224,11 @@ if __name__ == "__main__":
       #      "n_estimators":[10,50,100]}
     #}
     #model_fit(y_train,X_train)
+    
+
+    #healper class to handle all the evluation 
+    #measurement and print into a pd DF
+
 
     from Extra_Package.EstimatorSelector import EstimatorSelectionHelper
     helper1 = EstimatorSelectionHelper(models,params)
