@@ -41,12 +41,12 @@ int main()
     plotter->drawRatio(false);
     plotter->drawRatioErr(false);
     plotter->setDrawOptions("L");
-	  plotter->setAtlasLabel("ATLAS #it{work in progress}");
-	  TString baseDir = "MVA/Testout/";
-	  TString signalfile = baseDir+"out_mr275mx60_jpt20.root";
-	  //TString bkgfile = baseDir+"out_SherpaFast_sim_jpt20.root";
-	  TString bkgfile = baseDir+"out_background.root";
-		std::vector<TString> bdtclasses = {"metsig25noJ","metsig25NJ1","metsig25NJ2","metsig35noJ","metsig35NJ1","metsig35NJ2","metsig55noJ","metsig55NJ1","metsig55NJ2"};
+	plotter->setAtlasLabel("ATLAS #it{work in progress}");
+	TString baseDir = "MVA/Testout/";
+	TString signalfile = baseDir+"out_mr275mx60_jpt20.root";
+	//TString bkgfile = baseDir+"out_SherpaFast_sim_jpt20.root";
+	TString bkgfile = baseDir+"out_background.root";
+	std::vector<TString> bdtclasses = {"metsig25noJ","metsig25NJ1","metsig25NJ2","metsig35noJ","metsig35NJ1","metsig35NJ2","metsig55noJ","metsig55NJ1","metsig55NJ2"};
 	std::vector<TString> sets = {"MetSig25","MetSig35","MetSig55","MetSig25Vtx","MetSig35Vtx","MetSig55Vtx"};
 	std::vector<TString> jetsets = {"NJgt1","NJeq1","NJgt2"};
 	std::map<TString,double> nomBkGYields;nomBkGYields.clear();
@@ -67,35 +67,15 @@ int main()
 	
 	LoopFills(signalfile,nomSiGYields,"signal");
 	LoopFills(bkgfile,nomBkGYields,"background");
-/*	for(std::map<TString,double>::iterator c = nomSiGYields.begin(); c!=nomSiGYields.end(); ++c)
-	{
-		std::cout<<"signal: "<<(*c).first<<"  :  "<<(*c).second<<std::endl;
-	}
-	for(std::map<TString,double>::iterator c = nomBkGYields.begin(); c!=nomBkGYields.end(); ++c)
-	{
-		std::cout<<"background: "<<(*c).first<<"  :  "<<(*c).second<<std::endl;
-	}
-*/
 
-	
 	std::cout<<"Calculating significance from S and B:"<<std::endl;
 	for(TString set: sets){
 		for(TString jetset: jetsets){
 			double sig = nomSiGYields[set+jetset]/sqrt(nomBkGYields[set+jetset]);
 			sigTotals[set+jetset]=sig;
-			std::cout<<set+jetset<<" signal: "<<nomSiGYields[set+jetset]<<" bkg: "<<nomBkGYields[set+jetset]<<" sigf = "<<sigTotals[set+jetset]<<std::endl;
-			
-			/*
-			for(int cut =0; cut<20;cut++){
-				TString cutname = Form("cut%d",cut);
-				double irrBkg = 22.51;
-				if(set.Contains("55")) irrBkg = 9.92;
-				double sigbdt = nomSiGYields[set+jetset+cutname]/sqrt(nomBkGYields[set+jetset+cutname]+irrBkg);
-				std::cout<<set+jetset+cutname<<" signal: "<<nomSiGYields[set+jetset+cutname]<<" bkg: "<<nomBkGYields[set+jetset+cutname]<<" sigf = "<<sigbdt<<std::endl;
-				
-			}*/
-			
-			
+			std::cout<<set+jetset<<" signal: "<<nomSiGYields[set+jetset]
+					<<" bkg: "<<nomBkGYields[set+jetset]
+					<<" sigf = "<<sigTotals[set+jetset]<<std::endl;	
 		}
 	}
 	std::vector<TString> tmpsets = {"MetSig25","MetSig35","MetSig55"};
@@ -128,7 +108,9 @@ int main()
 	
 	Double_t xVals[100];
 	Double_t yVals[100];
-	std::vector<Color_t> colors{kBlue+2,kRed+1,kGreen+2,kTeal,kOrange-3,kViolet,kYellow-1,kBlack,kBlue-8,kGray};
+	std::vector<Color_t> colors{kBlue+2,kRed+1,kGreen+2,
+							kTeal,kOrange-3,kViolet,kYellow-1,
+							kBlack,kBlue-8,kGray};
 	
 	TString plotout = Form("MVA/Plots/");
 	TCanvas *can = new TCanvas("c1","Can",0.,0.,800,600);
@@ -166,7 +148,11 @@ int main()
 					else
 					  sigbdt = nomSiGYields[set+vtx+jetset+cutname]/sqrt(nomBkGYields[set+vtx+jetset+cutname]);
 					
-					std::cout<<set+vtx+jetset+cutname<<" signal: "<<nomSiGYields[set+vtx+jetset+cutname]<<" bkg: "<<nomBkGYields[set+vtx+jetset+cutname]<<" sigfbdt = "<<sigbdt<<std::endl;
+					std::cout<<set+vtx+jetset+cutname<<" signal: "
+							<<nomSiGYields[set+vtx+jetset+cutname
+							]<<" bkg: "<<nomBkGYields[set+vtx+jetset+cutname]
+							<<" sigfbdt = "<<sigbdt<<std::endl;
+
 					double cutVal = (cut-10)/10.0;
 					xVals[cut] = cutVal;
 					yVals[cut] = sigbdt;
@@ -230,10 +216,6 @@ int main()
 	}//end of Vxt loop
 	
 	
-	 //for(std::map<TString,double>::iterator c = sigTotals.begin(); c!=sigTotals.end(); ++c)
-	// {
-	// std::cout<<"total: "<<(*c).first<<"  :  "<<(*c).second<<std::endl;
-	// }
 	
 	std::cout<<"Calculating significance improvement:"<<std::endl;
 	for(TString set: sets){
