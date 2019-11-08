@@ -62,9 +62,6 @@ void MVATools::Training_setupFactory(TString factConfig)
     setdir("TrainingInfo");
     ////inputing, outfile, varname, input treeS, treeB, cutS, cutB, weightname
     outputFile = TFile::Open( trainingDir+"/"+mvaoutname+".root", "RECREATE" );
-	//outputFile = TFile::Open( mvaoutname+".root", "RECREATE" );
-    //factory = new TMVA::Factory( mvaoutname, outputFile,
-    //                           "!V:!Silent:Color:DrawProgressBar:Transformations=I;P;G,D:AnalysisType=Classification" );
 	factory = new TMVA::Factory( mvaoutname, outputFile,factConfig);
     #if ROOT_VERSION_CODE >= ROOT_VERSION(6,8,0)
     dataloader = new TMVA::DataLoader("dataset");
@@ -105,18 +102,13 @@ void MVATools::Training_execute(TCut mycuts, TCut mycutb )
 {
     std::cout<<"Starting the training run..."<<std::endl;
 
-    //dataloader->PrepareTrainingAndTestTree(mycuts,mycutb, 
-    //"nTrain_Signal=0:nTrain_Background=0:SplitMode=Random:NormMode=EqualNumEvents:!V");
 	dataloader->PrepareTrainingAndTestTree(mycuts,mycutb,m_trainconfig);
     #if ROOT_VERSION_CODE >= ROOT_VERSION(6,8,0)
 	if(m_mvaAlgo == "BDTG")
-    //factory->BookMethod(dataloader,TMVA::Types::kBDT, "BDTG1",
-    //"!H:!V:NTrees=800:MinNodeSize=1:BoostType=Grad:Shrinkage=0.06:UseBaggedBoost:BaggedSampleFraction=0.6:nCuts=20:MaxDepth=3");
+   
 	factory->BookMethod(dataloader, TMVA::Types::kBDT, "BDTG",m_algoConfig);
     #else
 	factory->BookMethod( TMVA::Types::kBDT, "BDTG",m_algoConfig);
-    // factory->BookMethod(TMVA::Types::kBDT, "BDTG1",
-    //"!H:!V:NTrees=800:MinNodeSize=1:BoostType=Grad:Shrinkage=0.06:UseBaggedBoost:BaggedSampleFraction=0.6:nCuts=20:MaxDepth=3");
     #endif
  
     std::cout<<"Training all methods..."<<std::endl;
@@ -176,10 +168,7 @@ void MVATools::Evaluate_saveBDTOutput()
     Float_t  outvars[reader.size()];
     Float_t  treevars[mvaVars.size()];
 
-    //for (UInt_t ivar=0; ivar<reader.size(); ivar++)
-    //{
-    //readerchain->SetBranchAddress( Form( tmpstr+"%i", ivar+1 ) , &outvars[ivar] );
-    //}
+   
     for (UInt_t ivar=0; ivar<mvaVars.size(); ivar++)
     {
         readerchain->SetBranchAddress(mvaVars[ivar] , &(treevars[ivar]));
@@ -214,65 +203,6 @@ void MVATools::Evaluate_saveBDTOutput()
 
     outf->Write();
     outf->Close();
-
-//    std::vector<Double_t> vars; // vector has size of number of input variables
-//    Float_t  treevars[mvaVars.size()];
-//    Float_t  treespec[spectatorVars.size()];
-//
-//    Float_t weighttmp;
-//    TFile *outf=new TFile(readeroutputfile,"recreate");
-//    outputtree=new TTree("tree","tree");
-//    TString tmpstr="met_MVA";
-//
-//    for (UInt_t ivar=0; ivar<reader.size(); ivar++)
-//    {
-//        outputtree->Branch( Form( tmpstr+"%i", ivar+1 ) , &outvars[ivar] );
-//    }
-//    for (UInt_t ivar=0; ivar<spectatorVars.size(); ivar++)
-//    {
-//        outputtree->Branch(spectatorVars[ivar] , &(treespec[ivar]));
-//    }
-//    for (UInt_t ivar=0; ivar<mvaVars.size(); ivar++)
-//    {
-//        outputtree->Branch(mvaVars[ivar] , &(treevars[ivar]));
-//    }
-
-//    UInt_t totalSize = readerchain->GetEntries();
-//    std::cout<<"Running over file: "<<readerchain->GetFile()->GetName()<<std::endl;
-//    for (UInt_t i=0; i<totalSize; i++)
-//    {
-//        readerchain->GetEntry(i);
-//        PrintProgressBar(i,totalSize);
-//
-//
-//        for (int j=0; j<stringset.size(); j++)
-//        {
-//            for(int k=0; k<stringset.at(j).size(); k++)
-//            {
-//                arrayvar2d[j][k]=Float_t(readerchain->GetLeaf(stringset.at(j).at(k))->GetValue());
-//            }
-//        }
-//
-//        for (UInt_t ivar=0; ivar<spectatorVars.size(); ivar++)
-//        {
-//            treespec[ivar]=Float_t(readerchain->GetLeaf(spectatorVars[ivar])->GetValue());
-//        }
-//
-//        for (UInt_t ivar=0; ivar<mvaVars.size(); ivar++)
-//        {
-//            treevars[ivar]=Float_t(readerchain->GetLeaf(mvaVars[ivar])->GetValue());
-//        }
-//
-//        for (int k=0; k<reader.size(); k++)
-//        {
-//            outvars[k]=Float_t(reader[k]->EvaluateMVA(  Form( "BDT%i", k+1 )  ));
-//        }
-//
-//        outputtree->Fill();
-//    }
-//
-//    outf->Write();
-//    outf->Close();
 }
 
 void MVATools::addvarlist(TString strvar)

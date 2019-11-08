@@ -38,16 +38,8 @@ int main(int argc, char **argv)
   TString config = TString(argv[2]);
   std::cout<<"reading config: "<<config<<std::endl;
   TEnv m_reader(config);
-   
-  //m_reader->ReadFile(config);
-  //TString test = m_reader.GetValue("BDTGConfig","");
-  //std::cout<<"Test: "<<test<<std::endl;
-
- 
 
 
- 
-  //TString IdName  = settings->getStr("IDname");
   std::vector<TString>  IdNames;
   splitString(m_reader.GetValue("IDname",""),IdNames," ");
   for(TString IdName: IdNames ){
@@ -89,21 +81,25 @@ int main(int argc, char **argv)
 	        TString cut   = m_reader.GetValue(cate+"Cut","");
 	        TCut cutS     = TCut(cut);
 	        TCut cutB     = TCut(cut);
+
 	        std::cout<<"Starting traning on "<<IdName<<std::endl;
 	        std::cout<<"check: "<<cut<<std::endl;
-	        TString bkgSample = m_reader.GetValue("Commonbackground","");
+
+	        TString bkgSample     = m_reader.GetValue("Commonbackground","");
 	        TString samplepath 		= baseDir+mvaInputdir;
 	        TString signalfile 		=samplepath+"/"+IdName+".root";
 	        TString bkgsamplefile =samplepath+"/"+bkgSample+".root";
-	        TString mvatxtfile   =    traindir+"/MVA-Vars-"+sampleIdentifier+".txt";
+	        TString mvatxtfile  = traindir+"/MVA-Vars-"+sampleIdentifier+".txt";
 	        TString config			= m_reader.GetValue("TrainConfig","");
 	        TString mvaalgo 		= m_reader.GetValue("MVAalgo","");
 	        TString algoConfig 	= m_reader.GetValue(mvaalgo+"Config","");
 	        TString factConfig	= m_reader.GetValue("FactoryConfig","");
-          TString signalTree        = m_reader.GetValue("SignalTree","");
-          TString bkgTree        = m_reader.GetValue("BackgroundTree","");
-          TString weight        = m_reader.GetValue("WeightEvent","");
-	        //timer
+          TString signalTree  = m_reader.GetValue("SignalTree","");
+          TString bkgTree     = m_reader.GetValue("BackgroundTree","");
+          TString weight      = m_reader.GetValue("WeightEvent","");
+	        
+          
+          //timer
           TStopwatch sw;
 	        sw.Start();
 	        MVATools mva(signalfile,bkgsamplefile,sampleIdentifier,mvatxtfile,signalTree,bkgTree,weight);

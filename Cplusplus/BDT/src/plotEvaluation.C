@@ -69,22 +69,18 @@ int main(int argc, char **argv)
         TString config = TString(argv[1]);
         std::cout<<"reading config: "<<config<<std::endl;
         TEnv m_reader(config);
-	
-	//TString baseDir = "TrainingInfo/";
-        //TString outdir  = "Plots/";
 
         TString baseDir = m_reader.GetValue("TrainInfoDir","");
         TString outdir  = m_reader.GetValue("plotOutputDir","");
         
         system(Form("mkdir -vp %s", outdir.Data()));
-	
-        //std::vector<TString> trainBDTFiles;
+
         std::vector<TH1*> histList;
 	
-       // std::vector<TString> metsets = {"metSig55","metSig70"};
+   
         std::vector<TString> metsets;
         splitString(m_reader.GetValue("Categories",""),metsets," ");
-	//std::vector<TString> traintypes = {"combzphxx_gg_mzp50_mx1"};
+	/
         std::vector<TString> traintypes;
         splitString(m_reader.GetValue("SignalSamples",""),traintypes," ");
 	
@@ -105,20 +101,6 @@ int main(int argc, char **argv)
 		std::cout<<"open hist: "<<hist->GetName()<<std::endl;
 		histList.push_back(hist);
 		std::cout<<"push back: "<<fileDir<<std::endl;
-		
-		/*
-		fileName = traintype+"metSig70.root";
-		std::cout<<"check2: "<<fileName<<std::endl;
-		fileDir = baseDir+fileName;
-		
-		TFile *file2=new TFile(fileDir);
-		std::cout<<"opened: "<<fileDir<<std::endl;
-		TH1 *hist2=(TH1*)file2->Get("dataset/Method_BDTG/BDTG/MVA_BDTG_rejBvsS");
-		hist2->SetName("Int. S_{E^{miss}_{T}} "+getSample(traintype));
-		histList.push_back(hist2);
-		
-		std::cout<<"done: "<<traintype<<std::endl;
-                */
 		i++;
 	  }
         }
@@ -185,12 +167,12 @@ int main(int argc, char **argv)
 			sigTrain.push_back(hist);
 			
 
-                        TH1 *histT=(TH1*)file->Get("dataset/Method_BDTG/BDTG/MVA_BDTG_Train_S");
-                        histT->SetName(label+" S_{E^{miss}_{T}} "+getSample(traintype)+" S Train");
-                        histT->SetMarkerStyle(20);
-                        histT->SetMarkerSize(.75);
-                        histT->SetMarkerColor(kBlue+1);
-                        sigTrainT.push_back(histT);
+            TH1 *histT=(TH1*)file->Get("dataset/Method_BDTG/BDTG/MVA_BDTG_Train_S");
+            histT->SetName(label+" S_{E^{miss}_{T}} "+getSample(traintype)+" S Train");
+            histT->SetMarkerStyle(20);
+            histT->SetMarkerSize(.75);
+            histT->SetMarkerColor(kBlue+1);
+            sigTrainT.push_back(histT);
 
 			
 			TH1 *hist2=(TH1*)file->Get("dataset/Method_BDTG/BDTG/MVA_BDTG_B");
@@ -200,12 +182,12 @@ int main(int argc, char **argv)
 			hist2->SetFillColorAlpha(kRed+1,0.5);
 			bkgTrain.push_back(hist2);
 
-                         TH1 *hist2T=(TH1*)file->Get("dataset/Method_BDTG/BDTG/MVA_BDTG_Train_B");
-                         hist2T->SetName(label+" S_{E^{miss}_{T}} "+getSample(traintype)+" B Train");
-                         hist2T->SetMarkerStyle(20);
-                         hist2T->SetMarkerSize(.75);
-                         hist2T->SetMarkerColor(kRed+1);
-                         bkgTrainT.push_back(hist2T);
+        	TH1 *hist2T=(TH1*)file->Get("dataset/Method_BDTG/BDTG/MVA_BDTG_Train_B");
+            hist2T->SetName(label+" S_{E^{miss}_{T}} "+getSample(traintype)+" B Train");
+            hist2T->SetMarkerStyle(20);
+            hist2T->SetMarkerSize(.75);
+            hist2T->SetMarkerColor(kRed+1);
+            bkgTrainT.push_back(hist2T);
 		}
 	
 	plotter->reset();
@@ -228,8 +210,8 @@ int main(int argc, char **argv)
 		std::vector<TString> labels = {};
 		temp.push_back(sigTrain[histNum]);
 		temp.push_back(bkgTrain[histNum]);
-                temp.push_back(sigTrainT[histNum]);
-                temp.push_back(bkgTrainT[histNum]);
+        temp.push_back(sigTrainT[histNum]);
+        temp.push_back(bkgTrainT[histNum]);
 		sigTrain[histNum]->GetXaxis()->SetTitle("BDT Output");
 		sigTrain[histNum]->GetYaxis()->SetTitle("Events (Norm)");
 		//TH1 hist; hist.GetXaxis
