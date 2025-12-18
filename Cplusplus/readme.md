@@ -26,3 +26,7 @@ source plotROC.sh
 
 
 Model evaluation is done bu scan.C
+
+
+## version question
+https://root-forum.cern.ch/t/change-in-tmva-bdtg-results/29268
